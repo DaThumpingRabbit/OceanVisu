@@ -9,12 +9,11 @@ public class Interact : MonoBehaviour {
     bool rightIsDown ;
     bool middleIsDown ;
     Vector3 previousMousePosition ;
-    Camera camera ;
-    GameObject[] obj;
     protected bool independent = true;
 
-    void Start () {
-        camera = Camera.main ;
+    void Start ()
+    {
+
     }
 
 

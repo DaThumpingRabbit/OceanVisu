@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2227576811248207062}
   - component: {fileID: 2445197618884515755}
+  - component: {fileID: 6553139200169561534}
   m_Layer: 0
   m_Name: PointGraphObject
   m_TagString: Untagged
@@ -41,5 +42,24 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0483ce3a29a66a04e89fb55c3367483e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  axe: {fileID: 419070030947373441, guid: a520613ee15f0724a8182433d6249ec9, type: 3}
+  xLabel: {fileID: 0}
+  yLabel: {fileID: 0}
+  xMinLabel: {fileID: 0}
+  yMinLabel: {fileID: 0}
+  xMaxLabel: {fileID: 0}
+  yMaxLabel: {fileID: 0}
+--- !u!114 &6553139200169561534
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6068226693965093459}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9b9525612204a242b4ef46d4788f498, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

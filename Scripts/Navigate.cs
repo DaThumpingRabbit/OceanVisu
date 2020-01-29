@@ -21,19 +21,19 @@ public class Navigate : MonoBehaviour {
         transform.Rotate (0.0f, rotateHorizontal, 0.0f) ;
 		var moveRight = Input.GetKey (KeyCode.Y) ;//Y. 
         if (moveRight) {
-            transform.Translate (5f, 0.0f, 0.0f) ;
+            transform.Translate (10f, 0.0f, 0.0f) ;
         }
 		var moveLeft = Input.GetKey (KeyCode.R) ;//T 
         if (moveLeft) {
-            transform.Translate (-5f, 0.0f, 0.0f) ;
+            transform.Translate (-10f, 0.0f, 0.0f) ;
         }
 		var moveUp = Input.GetKey (KeyCode.PageUp) ;
         if (moveUp) {
-            transform.Translate (0.0f, 2f, 0.0f) ;
+            transform.Translate (0.0f, 5f, 0.0f) ;
         }
 		var moveDown = Input.GetKey (KeyCode.PageDown) ;
         if (moveDown) {
-            transform.Translate (0.0f, -2f, 0.0f) ;
+            transform.Translate (0.0f, -5f, 0.0f) ;
         }
 		var rotateHeadingRight = Input.GetKey (KeyCode.H) ;
         if (rotateHeadingRight) {

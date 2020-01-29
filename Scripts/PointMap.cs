@@ -23,6 +23,11 @@ public class PointMap : MonoBehaviour {
 
     protected GameObject innerSphere ;
 
+    protected List<GameObject> lasers;
+
+    protected List<Vector3> pointsForLasers;
+
+
     public void Start () {
         innerSphere = GameObject.CreatePrimitive (PrimitiveType.Sphere) ;
         innerSphere.transform.parent = transform ;
@@ -30,6 +35,8 @@ public class PointMap : MonoBehaviour {
         innerSphere.transform.localPosition = new Vector3 (0, 0, 0) ;
         innerSphere.SetActive(true);
         innerSphere.GetComponent<MeshRenderer>().material = Resources.Load("InnerSphere", typeof(Material)) as Material;
+        lasers = new List<GameObject>();
+        pointsForLasers = new List<Vector3>();
         hidden = true;
         Hide(true);
     }
@@ -54,6 +61,49 @@ public class PointMap : MonoBehaviour {
          for (int t = 0 ; t < nbTime ; t++) {
             pointGroups [t] = new GameObject [nbDepth] ;
        }
+    }
+
+    public void SetLaser(List<Vector3> points, bool toStock)
+    {
+        if (toStock)
+        {
+            pointsForLasers = points;
+        }
+
+        foreach (Vector3 point in points)
+        {
+            GameObject laser = new GameObject();
+            lasers.Add(laser);
+            laser.transform.parent = transform;
+            laser.AddComponent<LineRenderer>();
+            laser.GetComponent<LineRenderer>().endWidth = 20;
+            laser.GetComponent<LineRenderer>().SetPosition(0, transform.position + point);
+            laser.GetComponent<LineRenderer>().SetPosition(1, transform.position + point * 3);
+            if (hidden)
+            {
+                laser.SetActive(false);
+            }
+        }
+        
+    }
+
+    public void RemoveLaser()
+    {
+        foreach (GameObject laser in lasers)
+        {
+            Destroy(laser);
+        }
+        lasers = new List<GameObject>();
+    }
+
+    public void RefreshLasers(bool value)
+    {
+        RemoveLaser();
+        SetLaser(pointsForLasers, false);
+        foreach (GameObject laser in lasers)
+        {
+            laser.SetActive(value);
+        }
     }
 
     public virtual void initSlice (int t, int depth, Vector3 [] sPoints, Vector3 [] pPoints, int [] indices, Color [] colors, MeshTopology meshTopology) {
@@ -94,7 +144,6 @@ public class PointMap : MonoBehaviour {
                 pointGroups [activeTime][activeSlice].SetActive (true) ;
             }
         }
-        print ("Slice Changed : " + activeSlice + " at time " + activeTime) ;
     }
 
     public void ActivateSliceInverse () {
@@ -114,7 +163,6 @@ public class PointMap : MonoBehaviour {
                 pointGroups [activeTime][activeSlice].SetActive (true) ;
             }
         }
-        print ("Slice Changed : " + activeSlice + " at time " + activeTime) ;
     }
 
     public void Hide(bool newValue)
@@ -128,6 +176,8 @@ public class PointMap : MonoBehaviour {
                     pointGroups[t][d].SetActive(false);
                 }
             }
+            innerSphere.SetActive(false);
+            
         }
         else
         {
@@ -142,6 +192,8 @@ public class PointMap : MonoBehaviour {
             {
                 pointGroups[activeTime][activeSlice].SetActive(true);
             }
+            innerSphere.SetActive(true);
+            
         }
     }
 
@@ -152,7 +204,6 @@ public class PointMap : MonoBehaviour {
         for (int d = 0 ; d < nbDepth ; d++) {
             pointGroups [activeTime][d].SetActive (true) ;
         }
-        print ("Slice Changed : " + activeSlice + " at time " + activeTime) ;
     }
 
     public virtual String GetProperty (int triangleIndex) {
@@ -198,7 +249,6 @@ public class PointMap : MonoBehaviour {
         } else {
             pointGroups [activeTime][activeSlice].SetActive (true) ;
         }
-        print ("Time Changed : " + activeTime + " for slice " + activeSlice) ;
     }
     public void ChangeToSphere () {
         for (int t = 0 ; t < nbTime ; t++) {

@@ -11,7 +11,7 @@ public abstract class MapFromLatLong : MonoBehaviour {
 
 
     /*
-     * Test de courbes avec points (pointgraph2) et cubes (pointgraphs)
+     * Test de courbes avec cubes (pointgraphs)
      */
     public PointGraphs pointGraphToInstanciate;
     protected PointGraphs[] pointGraphs;
@@ -43,12 +43,13 @@ public abstract class MapFromLatLong : MonoBehaviour {
 
     private const int ECARTEMENT = 600;
 
+    protected float salMin = 100, salMax = -1, tempMin = 100, tempMax = -100;
+
     void Start () {
         //GameObject cube = GameObject.CreatePrimitive (PrimitiveType.Cube) ;
         //cube.transform.parent = transform ;
         invisiblePlanets = new SortedDictionary<int, PointMap>();
         visiblePlanets = new SortedDictionary<int, PointMap>();
-
     }
 
     private void OnGUI()
@@ -60,9 +61,9 @@ public abstract class MapFromLatLong : MonoBehaviour {
     }
     public IEnumerator testCreateMesh() 
     {
-        bool test = false;
+        //bool test = false;
         int result = CreateMesh();
-        float timer = 0;
+        //float timer = 0;
         yield return new WaitForEndOfFrame();
         /*
         while (test==false) 
@@ -91,8 +92,8 @@ public abstract class MapFromLatLong : MonoBehaviour {
         GUI.Label(new Rect(50, 40, 200, 30), "Choose what you want to see");
 
         toggleTemp = GUI.Toggle(new Rect(50, 70, 100, 30), toggleTemp, "Temperature");
-        toggleSal = GUI.Toggle(new Rect(50, 100, 100, 30), toggleSal, "Salinity");
-        toggleSpeed = GUI.Toggle(new Rect(50, 130, 100, 30), toggleSpeed, "Speed");
+        toggleSpeed = GUI.Toggle(new Rect(50, 100, 100, 30), toggleSpeed, "Speed");
+        toggleSal = GUI.Toggle(new Rect(50, 130, 100, 30), toggleSal, "Salinity");
         toggleMix = GUI.Toggle(new Rect(50, 160, 100, 30), toggleMix, "Mix of 3");
 
 
@@ -142,12 +143,14 @@ public abstract class MapFromLatLong : MonoBehaviour {
         clippingPlanes = new GameObject[4];
 
         /*
-         * Test de courbes avec points (pointgraph2) et cubes (pointgraphs)
+         * Test de courbes avec cubes (pointgraphs)
          */
         pointGraphs = new PointGraphs[1];
         pointGraphs[0] = (PointGraphs)Instantiate(pointGraphToInstanciate, new Vector3(0, 0, 0), new Quaternion());
         pointGraphs[0].initPointGroups(nbTime, nbDepth, nbY, nbX);
         pointGraphs[0].SetShader(pointGraphs[0].ChooseShader());
+
+        Dictionary<Vector3, List<Vector3>> graphToSphere = pointGraphs[0].getPointsDict();
         /*
          * 
          */
@@ -181,11 +184,11 @@ public abstract class MapFromLatLong : MonoBehaviour {
 
 
         /*
-         * Test de courbes avec points (pointgraph2) et cubes (pointgraphs)
+         * Test de courbes avec cubes (pointgraphs)
          */
         int[] indicesIndices = new int[nbX * nbY * 36];
 
-        float cubeSize = 1.0f;
+        float cubeSize = 2.0f;
         Vector3[] offsets = {  new Vector3 ( -cubeSize, -cubeSize, -cubeSize),
                                 new Vector3 ( -cubeSize, -cubeSize, +cubeSize),
                                 new Vector3 ( -cubeSize, +cubeSize, -cubeSize),
@@ -194,6 +197,7 @@ public abstract class MapFromLatLong : MonoBehaviour {
                                 new Vector3 ( +cubeSize, -cubeSize, +cubeSize),
                                 new Vector3 ( +cubeSize, +cubeSize, -cubeSize),
                                 new Vector3 ( +cubeSize, +cubeSize, +cubeSize) };
+        Vector3 antipodes = new Vector3(10000.0f, 10000.0f, 10000.0f);
         /*
          * 
          */
@@ -217,7 +221,6 @@ public abstract class MapFromLatLong : MonoBehaviour {
         }
 
         for (int t = 0 ; t < nbTime ; t++) {
-            print ("t = " + t) ;
 
             for (int d = 0 ; d < nbDepth ; d++) {
                 //print ("d = " + d) ;
@@ -226,7 +229,7 @@ public abstract class MapFromLatLong : MonoBehaviour {
 
 
                 /*
-                 * Test de courbes avec points (pointgraph2) et cubes (pointgraphs)
+                 * Test de courbes avec cubes (pointgraphs)
                  */
                 int indiceIndices = 0;
                 int indicePoints = 0;
@@ -283,6 +286,22 @@ public abstract class MapFromLatLong : MonoBehaviour {
                         vz =  float.Parse (currentLine [8], NumberStyles.Any, ci) ;
 
 
+                        if (temperature > tempMax && temperature != 0)
+                        {
+                            tempMax = temperature;
+                        }
+                        if (temperature < tempMin && temperature != 0)
+                        {
+                            tempMin = temperature;
+                        }
+                        if (salinity > salMax && salinity != 0)
+                        {
+                            salMax = salinity;
+                        }
+                        if (salinity < salMin && salinity != 0)
+                        {
+                            salMin = salinity;
+                        }
 
 
                         mySphericalPoints [l] = myPoint ;
@@ -290,8 +309,8 @@ public abstract class MapFromLatLong : MonoBehaviour {
                         
 
                         // temperature
-                        float tMax = 33.0f ;
-                        float tMin = 0.0f ;
+                        float tMax = 32.0f ;
+                        float tMin = -3.0f ;
                         float tMiddle = (tMin + tMax) / 2.0f ;
 
                         // speed
@@ -301,17 +320,18 @@ public abstract class MapFromLatLong : MonoBehaviour {
                         float speed = (float)Math.Sqrt (vx * vx + vy * vy + vz * vz) ;
 
                         // salinity
-                        float sMax = 38.0f ;
-                        float sMin = 32.0f ;
+                        float sMax = 41.0f ;
+                        float sMin = 5.0f ;
                         float sMiddle = (sMin + sMax) / 2.0f ;
 
-
+                        
 
 
                         /*
-                         * Test de courbes avec points (pointgraph2) et cubes (pointgraphs)
+                         * Test de courbes avec cubes (pointgraphs)
                          */
-                        Vector3 myPoint3 = new Vector3((temperature - tMin) * 10, (salinity - sMin) * 10, 10 + d * 10f);
+                        Vector3 myPoint3 = new Vector3((temperature - tMin) * 10, (salinity - sMin) * 10, 10 + d * 5f);
+
 
                         for (int i = 0; i < 8; i++)
                         {
@@ -346,6 +366,18 @@ public abstract class MapFromLatLong : MonoBehaviour {
 
                         // mix des 3
                         if ((salinity != 0.0f) && (speed != 0.0f) && (temperature != 0.0f)) {
+
+                            if (graphToSphere.ContainsKey(myPoint3))
+                            {
+                                graphToSphere[myPoint3].Add(myPoint);
+                            }
+                            else
+                            {
+                                graphToSphere.Add(myPoint3, new List<Vector3>());
+                                graphToSphere[myPoint3].Add(myPoint);
+                            }
+                            
+
                             if (temperature <= tMiddle) {
                                 myColors [0][l] = new Color (0.0f,
                                                           Math.Max (0, Math.Min (1, (temperature - tMin) / (tMiddle - tMin))),
@@ -398,11 +430,12 @@ public abstract class MapFromLatLong : MonoBehaviour {
 
 
                             /*
-                             * Test de courbes avec points (pointgraph2) et cubes (pointgraphs)
+                             * Test de courbes avec cubes (pointgraphs)
                              */
                             for (int i = 0; i < 8; i++)
                             {
-                                myGraphPoints[indicePoints + i] = ManageNullValue(myPoint3 + offsets[i]);
+                                myGraphColors[indicePoints + i] = incolore;
+                                myGraphPoints[indicePoints + i] = antipodes + offsets[i];
                             }
                             /*
                              * 
@@ -410,7 +443,7 @@ public abstract class MapFromLatLong : MonoBehaviour {
                         }
 
                         /*
-                         * Test de courbes avec points (pointgraph2) et cubes (pointgraphs)
+                         * Test de courbes avec cubes (pointgraphs)
                          */
                         indiceIndices = indiceIndices + 36;
                         indicePoints = indicePoints + 8;
@@ -457,7 +490,7 @@ public abstract class MapFromLatLong : MonoBehaviour {
 
 
                 /*
-                 * Test de courbes avec points (pointgraph2) et cubes (pointgraphs)
+                 * Test de courbes avec cubes (pointgraphs)
                  */
                 pointGraphs[0].initSlice(t, d, myGraphPoints, indicesIndices, myGraphColors, meshTopology);
                 /*
@@ -482,27 +515,7 @@ public abstract class MapFromLatLong : MonoBehaviour {
         GC.Collect (GC.MaxGeneration, GCCollectionMode.Forced) ;
 
 
-        for (int i = 0; i < pointMaps.Length; i++)
-        {
-            invisiblePlanets[i] = pointMaps[i];
-        }
-            
-        pointMaps [1].transform.Translate (600, 0, 0) ;
-        pointMaps [2].transform.Translate (1200, 0, 0) ;
-        pointMaps [3].transform.Translate (1800, 0, 0) ;
-
-
-        /*
-         * Test de courbes avec points (pointgraph2) et cubes (pointgraphs)
-         */
-        pointGraphs[0].transform.Translate(-500, 0, 0);
-        /*
-         * 
-         */
-
-
-
-        for(int i = 0; i < 4; i++)
+        for (int i = 0; i < 4; i++)
         {
             clippingBehaviors[i].SetPointMap(pointMaps[i]);
             clippingBehaviors[i].transform.SetParent(clippingPlanes[i].transform);
@@ -519,7 +532,21 @@ public abstract class MapFromLatLong : MonoBehaviour {
             clippingPlanes[i].transform.Translate(new Vector3(ECARTEMENT * i, 0, 0));
         }
 
-        ActivateTime () ;
+
+        /*
+         * Test de courbes avec cubes (pointgraphs)
+         */
+        for (int i = 0; i < pointGraphs.Length; i++)
+        {
+            pointGraphs[i].transform.Translate(ECARTEMENT * (i + visiblePlanets.Count), 0, 0);
+        }
+        pointGraphs[0].SetLabels("Température", "Salinité", (int)tempMin, (int)tempMax, (int)salMin, (int)salMax);
+        /*
+         * 
+         */
+
+
+        ActivateTime() ;
         return 1;
 
     }
@@ -646,6 +673,11 @@ public abstract class MapFromLatLong : MonoBehaviour {
     public PointMap[] GetPlanets()
     {
         return pointMaps;
+    }
+
+    public PointGraphs[] GetGraphs()
+    {
+        return pointGraphs;
     }
 
     public SortedDictionary<int,PointMap> GetDict(int type)
