@@ -4,11 +4,13 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using System.Globalization;
+using System.Linq;
 
 public abstract class MapFromLatLong : MonoBehaviour {
 	public PointMap pointMapToInstanciate ;
     protected PointMap [] pointMaps ;
 
+    private const int NUMBER_OF_PLANETS = 3;
 
     /*
      * Test de courbes avec cubes (pointgraphs)
@@ -39,7 +41,6 @@ public abstract class MapFromLatLong : MonoBehaviour {
     private bool toggleTemp = false;
     private bool toggleSal = false;
     private bool toggleSpeed = false;
-    private bool toggleMix = false;
 
     private const int ECARTEMENT = 600;
 
@@ -81,7 +82,6 @@ public abstract class MapFromLatLong : MonoBehaviour {
         GameObject.Find("ToggleTemp").GetComponent<Toggle>().isOn = toggleTemp;
         GameObject.Find("ToggleSalinity").GetComponent<Toggle>().isOn = toggleSal;
         GameObject.Find("ToggleSpeed").GetComponent<Toggle>().isOn = toggleSpeed;
-        GameObject.Find("ToggleMix").GetComponent<Toggle>().isOn = toggleMix;
 
         GameObject.Find("ScrollView").SetActive(false);
         showPopUp = false;
@@ -94,7 +94,6 @@ public abstract class MapFromLatLong : MonoBehaviour {
         toggleTemp = GUI.Toggle(new Rect(50, 70, 100, 30), toggleTemp, "Temperature");
         toggleSpeed = GUI.Toggle(new Rect(50, 100, 100, 30), toggleSpeed, "Speed");
         toggleSal = GUI.Toggle(new Rect(50, 130, 100, 30), toggleSal, "Salinity");
-        toggleMix = GUI.Toggle(new Rect(50, 160, 100, 30), toggleMix, "Mix of 3");
 
 
         GUI.Label(new Rect(300, 40, 200, 30), "Choose the number of time steps");
@@ -129,18 +128,27 @@ public abstract class MapFromLatLong : MonoBehaviour {
 
 
     public virtual int CreateMesh () {
-        string [] lines = System.IO.File.ReadAllLines (ChooseName ()) ;
-        string [] firstLine = lines [0].Split (',') ;
+        string path = ChooseName();
 
-        int.TryParse (firstLine [0], out nbTime) ;
-        int.TryParse (firstLine [1], out nbDepth) ;
-        int.TryParse (firstLine [2], out nbY) ;
-        int.TryParse (firstLine [3], out nbX) ;
+        string firstLine = System.IO.File.ReadLines(path).First();
 
-        pointMaps = new PointMap [4] ;
+        string[] firstDatas = firstLine.Split(',');
+
+        int.TryParse(firstDatas[0], out nbTime);
+        int.TryParse(firstDatas[1], out nbDepth);
+        int.TryParse(firstDatas[2], out nbY);
+        int.TryParse(firstDatas[3], out nbX);
+
+        // to load only some time steps
+        nbTime = Math.Min(nbTime, nbTimeMax);
+
+
+        string[] lines = System.IO.File.ReadLines(path).Take(nbTime * nbDepth * nbY * nbX + 1).ToArray();
+        
+        pointMaps = new PointMap [NUMBER_OF_PLANETS] ;
         //Added
-        clippingBehaviors = new ClippingPlane[4];
-        clippingPlanes = new GameObject[4];
+        clippingBehaviors = new ClippingPlane[NUMBER_OF_PLANETS];
+        clippingPlanes = new GameObject[NUMBER_OF_PLANETS];
 
         /*
          * Test de courbes avec cubes (pointgraphs)
@@ -163,8 +171,7 @@ public abstract class MapFromLatLong : MonoBehaviour {
         CultureInfo ci = (CultureInfo)CultureInfo.CurrentCulture.Clone();
         ci.NumberFormat.CurrencyDecimalSeparator = ".";
 
-        // to load only some time steps
-        nbTime = Math.Min (nbTime, nbTimeMax) ;
+        
 
         for (int i = 0 ; i < pointMaps.Length ; i++) {
             pointMaps [i] = (PointMap)Instantiate (pointMapToInstanciate, new Vector3 (0, 0, 0), new Quaternion ()) ;
@@ -254,7 +261,7 @@ public abstract class MapFromLatLong : MonoBehaviour {
 
                 for (int iy = 0 ; iy < nbY ; iy++) {
                     for (int ix = 0 ; ix < nbX ; ix++) {
-                        string [] currentLine = lines [line].Split (',') ;
+                        string [] currentLine = lines[line].Split (',') ;
                         int currentTime = 0 ;
                         float currentDepth = 0 ;
                         float currentLat = 0 ;
@@ -417,9 +424,7 @@ public abstract class MapFromLatLong : MonoBehaviour {
                                                           0.0f, 1f);
                                 }
                             }    
-                            myColors [3][l] = new Color (Math.Max (0, Math.Min (1, (temperature - tMin) / (tMax - tMin))),
-                                                         Math.Max (0, Math.Min (1, (salinity - sMin) / (sMax - sMin))),
-                                                         Math.Max (0, Math.Min (1, (speed - vMin) / (vMax - vMin))), 1f) ;
+                            
                         } else {
                             for (int i = 0 ; i < pointMaps.Length ; i++) {
                                 myColors [i][l] = incolore ;
@@ -454,7 +459,7 @@ public abstract class MapFromLatLong : MonoBehaviour {
 
 
                         l++ ;
-                        lines [line] = null ;
+                        lines[line] = null ;
                         line++ ;
                     }
                 }
@@ -515,7 +520,7 @@ public abstract class MapFromLatLong : MonoBehaviour {
         GC.Collect (GC.MaxGeneration, GCCollectionMode.Forced) ;
 
 
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < NUMBER_OF_PLANETS; i++)
         {
             clippingBehaviors[i].SetPointMap(pointMaps[i]);
             clippingBehaviors[i].transform.SetParent(clippingPlanes[i].transform);

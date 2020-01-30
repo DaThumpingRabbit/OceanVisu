@@ -67,7 +67,10 @@ public class PointMap : MonoBehaviour {
     {
         if (toStock)
         {
-            pointsForLasers = points;
+            foreach (Vector3 point in points)
+            {
+                pointsForLasers.Add(point);
+            }
         }
 
         foreach (Vector3 point in points)
@@ -94,6 +97,7 @@ public class PointMap : MonoBehaviour {
             Destroy(laser);
         }
         lasers = new List<GameObject>();
+        pointsForLasers.Clear();
     }
 
     public void RefreshLasers(bool value)

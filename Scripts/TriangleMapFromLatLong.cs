@@ -6,7 +6,7 @@ using System.Globalization;
 
 public class TriangleMapFromLatLong : MapFromLatLong {
     override public String ChooseName () {
-        return "dyna_grid_TSUVW_LatLong_small.txt" ;
+        return "dyna_grid_TSUVW_LatLong_huge.txt" ;
     }
     override public int [] ComputeIndicesSlice1 (int nbX, int nbY) {
         int [] indicesTris = new int [(nbX - 1) * (nbY -1) * 6];

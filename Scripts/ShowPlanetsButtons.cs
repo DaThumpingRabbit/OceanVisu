@@ -101,26 +101,12 @@ public class ShowPlanetsButtons : MonoBehaviour
         
     }
 
-    public void MixToggle(bool newValue)
-    { 
-        planets = map.GetPlanets();
-        invisiblePlanets = map.GetDict(0);
-        visiblePlanets = map.GetDict(1);
-        planets[3].Hide(!newValue);
-        planets[3].SetHiddenStatus(!newValue);
-
-        graphs = map.GetGraphs();
-
-        ShiftPlanets(newValue, 3, graphs);
-
-        
-    }
     /// ///////CHANGED THIS
 
     public void ClippingToggle(bool newValue)
     {
         planets = map.GetPlanets();
-        for (int i = 0;i<4;i++)
+        for (int i = 0; i < planets.Length; i++)
         {
             planets[i].EnableClippingPlane(newValue);
         }
@@ -130,7 +116,7 @@ public class ShowPlanetsButtons : MonoBehaviour
     public void IndependenceToggle(bool newValue)
     {
         planets = map.GetPlanets();
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < planets.Length; i++)
         {
             planets[i].GetComponent<Interact>().SetIndependentMovement(newValue);
         }
