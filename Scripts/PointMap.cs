@@ -24,8 +24,15 @@ public class PointMap : MonoBehaviour {
     protected GameObject innerSphere ;
 
     protected List<GameObject> lasers;
+    protected List<GameObject> lasersPlane;
 
     protected List<Vector3> pointsForLasers;
+    protected List<Vector3> pointsForLasersPlane;
+
+    Vector3 oldPos;
+    Vector3 oldAng;
+
+    bool isSphere = true;
 
 
     public void Start () {
@@ -36,13 +43,55 @@ public class PointMap : MonoBehaviour {
         innerSphere.SetActive(true);
         innerSphere.GetComponent<MeshRenderer>().material = Resources.Load("InnerSphere", typeof(Material)) as Material;
         lasers = new List<GameObject>();
+        lasersPlane = new List<GameObject>();
         pointsForLasers = new List<Vector3>();
+        pointsForLasersPlane = new List<Vector3>();
         hidden = true;
         Hide(true);
+        oldPos = transform.position;
+        oldAng = transform.eulerAngles;
     }
 
     public void Update () {
+        /*
+        for (int i = 0; i < pointsForLasers.Count; i++)
+        {
+            pointsForLasers[i] = pointsForLasers[i] + transform.position - oldPos + transform.eulerAngles - oldAng;
+        }
+        */
         
+        if (transform.position != oldPos)
+        {
+            for (int i = 0; i < lasers.Count; i++)
+            {
+                lasers[i].GetComponent<LineRenderer>().SetPosition(0, transform.position + pointsForLasers[i]);
+                lasers[i].GetComponent<LineRenderer>().SetPosition(1, transform.position + pointsForLasers[i] * 3);
+            }
+            for (int i = 0; i < lasersPlane.Count; i++)
+            {
+                lasersPlane[i].GetComponent<LineRenderer>().SetPosition(0, transform.position + pointsForLasersPlane[i]);
+                lasersPlane[i].GetComponent<LineRenderer>().SetPosition(1, transform.position + pointsForLasersPlane[i] * 3);
+            }
+        }
+
+        if (transform.eulerAngles != oldAng)
+        {
+            for (int i = 0; i < lasers.Count; i++)
+            {
+                lasers[i].transform.RotateAround(transform.position, Vector3.forward, (transform.eulerAngles.z - oldAng.z) * Time.deltaTime);
+                lasers[i].transform.RotateAround(transform.position, Vector3.right, (transform.eulerAngles.x - oldAng.x) * Time.deltaTime);
+                lasers[i].transform.RotateAround(transform.position, Vector3.up, (transform.eulerAngles.y - oldAng.y) * Time.deltaTime);
+            }
+            for (int i = 0; i < lasersPlane.Count; i++)
+            {
+                lasersPlane[i].transform.RotateAround(transform.position, Vector3.forward, (transform.eulerAngles.z - oldAng.z) * Time.deltaTime);
+                lasersPlane[i].transform.RotateAround(transform.position, Vector3.right, (transform.eulerAngles.x - oldAng.x) * Time.deltaTime);
+                lasersPlane[i].transform.RotateAround(transform.position, Vector3.up, (transform.eulerAngles.y - oldAng.y) * Time.deltaTime);
+            }
+        }
+        
+        oldAng = transform.eulerAngles;
+        oldPos = transform.position;
     }
 
     public void SetShader (Shader shader) {
@@ -72,22 +121,61 @@ public class PointMap : MonoBehaviour {
                 pointsForLasers.Add(point);
             }
         }
+        RemoveLaser();
 
-        foreach (Vector3 point in points)
+
+        foreach (Vector3 point in pointsForLasers)
         {
             GameObject laser = new GameObject();
             lasers.Add(laser);
             laser.transform.parent = transform;
             laser.AddComponent<LineRenderer>();
+            laser.GetComponent<LineRenderer>().useWorldSpace = false;
             laser.GetComponent<LineRenderer>().endWidth = 20;
             laser.GetComponent<LineRenderer>().SetPosition(0, transform.position + point);
             laser.GetComponent<LineRenderer>().SetPosition(1, transform.position + point * 3);
+            laser.transform.RotateAround(transform.position, Vector3.forward, transform.eulerAngles.z);
+            laser.transform.RotateAround(transform.position, Vector3.right, transform.eulerAngles.x);
+            laser.transform.RotateAround(transform.position, Vector3.up, transform.eulerAngles.y);
             if (hidden)
             {
                 laser.SetActive(false);
             }
         }
         
+    }
+
+    public void SetLaserPlane(List<Vector3> points, bool toStock)
+    {
+        if (toStock)
+        {
+            foreach (Vector3 point in points)
+            {
+                pointsForLasersPlane.Add(point);
+            }
+        }
+        RemoveLaser();
+
+
+        foreach (Vector3 point in pointsForLasersPlane)
+        {
+            GameObject laser = new GameObject();
+            lasersPlane.Add(laser);
+            laser.transform.parent = transform;
+            laser.AddComponent<LineRenderer>();
+            laser.GetComponent<LineRenderer>().useWorldSpace = false;
+            laser.GetComponent<LineRenderer>().endWidth = 20;
+            laser.GetComponent<LineRenderer>().SetPosition(0, transform.position + point);
+            laser.GetComponent<LineRenderer>().SetPosition(1, transform.position + point + new Vector3(0, 0, -250));
+            laser.transform.RotateAround(transform.position, Vector3.forward, transform.eulerAngles.z);
+            laser.transform.RotateAround(transform.position, Vector3.right, transform.eulerAngles.x);
+            laser.transform.RotateAround(transform.position, Vector3.up, transform.eulerAngles.y);
+            if (hidden)
+            {
+                laser.SetActive(false);
+            }
+        }
+
     }
 
     public void RemoveLaser()
@@ -97,17 +185,58 @@ public class PointMap : MonoBehaviour {
             Destroy(laser);
         }
         lasers = new List<GameObject>();
+     
+        foreach (GameObject laser in lasersPlane)
+        {
+            Destroy(laser);
+        }
+        lasersPlane = new List<GameObject>();
+    }
+
+    public void RemoveLaserAndPoints()
+    {
+        foreach (GameObject laser in lasers)
+        {
+            Destroy(laser);
+        }
+        lasers = new List<GameObject>();
+
+        foreach (GameObject laser in lasersPlane)
+        {
+            Destroy(laser);
+        }
+        lasersPlane = new List<GameObject>();
+
         pointsForLasers.Clear();
+        pointsForLasersPlane.Clear();
     }
 
     public void RefreshLasers(bool value)
     {
         RemoveLaser();
-        SetLaser(pointsForLasers, false);
-        foreach (GameObject laser in lasers)
+        if (isSphere)
         {
-            laser.SetActive(value);
+            SetLaser(pointsForLasers, false);
+            foreach (GameObject laser in lasers)
+            {
+                laser.SetActive(value);
+            }
         }
+        else
+        {
+            SetLaserPlane(pointsForLasersPlane, false);
+            foreach (GameObject laser in lasersPlane)
+            {
+                laser.SetActive(value);
+            }
+        }
+        
+    }
+
+    public void SetIsSphere(bool value)
+    {
+        isSphere = value;
+        RefreshLasers(!hidden);
     }
 
     public virtual void initSlice (int t, int depth, Vector3 [] sPoints, Vector3 [] pPoints, int [] indices, Color [] colors, MeshTopology meshTopology) {
@@ -262,7 +391,7 @@ public class PointMap : MonoBehaviour {
                 //UpdateCollider (pointGroups [t][d].GetComponent<MeshCollider> (), pointGroups [t][d].GetComponent<MeshFilter>().mesh) ;
             }
         }
-        innerSphere.SetActive (false) ;
+        innerSphere.SetActive (true) ;
     }
 
     public void ChangeToPlane () {

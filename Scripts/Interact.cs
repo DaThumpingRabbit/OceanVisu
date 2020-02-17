@@ -40,11 +40,13 @@ public class Interact : MonoBehaviour {
 
         GameObject[] obj = GameObject.FindGameObjectsWithTag("planet");
         GameObject[] clipP = GameObject.FindGameObjectsWithTag("ClippingPlane");
+        PointGraphs graph = GameObject.FindGameObjectWithTag("graph").GetComponent<PointGraphs>();
 
         if (rightIsDown) {
             for (int i = 0; i < obj.Length; i++)
             {
-                obj[i].transform.Rotate(new Vector3(delta.y, -delta.x, 0.0f) * Time.deltaTime * speed / 2,Space.World);
+                obj[i].transform.Rotate(new Vector3(delta.y, -delta.x, 0.0f) * Time.deltaTime * speed * 5,Space.World);
+                //graph.MiseAJour("r", new Vector3(delta.y, -delta.x, 0.0f) * Time.deltaTime * speed / 2);
             }
             
             /*
@@ -64,6 +66,7 @@ public class Interact : MonoBehaviour {
             for (int i=0; i < obj.Length; i++)
             {
                 obj[i].transform.Translate(new Vector3(delta.x*2, delta.y*2, 0.0f) * Time.deltaTime * speed,Space.World);
+                //graph.MiseAJour("t", new Vector3(delta.x * 2, delta.y * 2, 0.0f) * Time.deltaTime * speed);
             }
             
             /*
@@ -82,6 +85,7 @@ public class Interact : MonoBehaviour {
                 {
                     obj[i].transform.Translate(new Vector3(0.0f, 0.0f, delta.y) * Time.deltaTime * speed,Space.World);
                     clipP[i].transform.Translate(new Vector3(0.0f, 0.0f, delta.y) * Time.deltaTime * speed, Space.World);
+                    //graph.MiseAJour("t", new Vector3(0.0f, 0.0f, delta.y) * Time.deltaTime * speed);
                 }
             }
             else

@@ -571,7 +571,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 290, y: 220}
+  m_SizeDelta: {x: 290, y: 275}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &267276072
 MonoBehaviour:
@@ -628,7 +628,14 @@ MonoBehaviour:
 
     - middle pressed : bring planets closer or push them away
 
-'
+
+    While mouse on a graph :
+
+    CTRL : select a single point
+
+    ALT : select points while key down
+
+    SHIFT : delete all selected points'
 --- !u!222 &267276073
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -999,7 +1006,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 3
+    m_Mode: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
@@ -3273,7 +3280,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 350, y: 250}
+  m_SizeDelta: {x: 350, y: 300}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1634590719
 MonoBehaviour:

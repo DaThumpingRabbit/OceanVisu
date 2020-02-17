@@ -46,6 +46,8 @@ public abstract class MapFromLatLong : MonoBehaviour {
 
     protected float salMin = 100, salMax = -1, tempMin = 100, tempMax = -100;
 
+    protected bool isSphere = true;
+
     void Start () {
         //GameObject cube = GameObject.CreatePrimitive (PrimitiveType.Cube) ;
         //cube.transform.parent = transform ;
@@ -98,7 +100,7 @@ public abstract class MapFromLatLong : MonoBehaviour {
 
         GUI.Label(new Rect(300, 40, 200, 30), "Choose the number of time steps");
 
-        nbTimeMax = Convert.ToInt32(GUI.TextField(new Rect(300, 70, 100, 30), nbTimeMax.ToString()));
+        nbTimeMax = Int32.Parse(GUI.TextField(new Rect(300, 70, 100, 30), nbTimeMax.ToString()));
 
 
         // You may put a button to close the pop up too
@@ -159,6 +161,7 @@ public abstract class MapFromLatLong : MonoBehaviour {
         pointGraphs[0].SetShader(pointGraphs[0].ChooseShader());
 
         Dictionary<Vector3, List<Vector3>> graphToSphere = pointGraphs[0].getPointsDict();
+        Dictionary<Vector3, List<Vector3>> graphToPlane = pointGraphs[0].getPointsDictPlane();
         /*
          * 
          */
@@ -232,7 +235,6 @@ public abstract class MapFromLatLong : MonoBehaviour {
             for (int d = 0 ; d < nbDepth ; d++) {
                 //print ("d = " + d) ;
                 int l = 0 ;
-
 
 
                 /*
@@ -377,11 +379,15 @@ public abstract class MapFromLatLong : MonoBehaviour {
                             if (graphToSphere.ContainsKey(myPoint3))
                             {
                                 graphToSphere[myPoint3].Add(myPoint);
+                                graphToPlane[myPoint3].Add(myPoint2);
                             }
                             else
                             {
                                 graphToSphere.Add(myPoint3, new List<Vector3>());
                                 graphToSphere[myPoint3].Add(myPoint);
+
+                                graphToPlane.Add(myPoint3, new List<Vector3>());
+                                graphToPlane[myPoint3].Add(myPoint2);
                             }
                             
 
@@ -657,13 +663,15 @@ public abstract class MapFromLatLong : MonoBehaviour {
     /// </summary>
     void ChangeToSphere () {
         for (int i = 0 ; i < pointMaps.Length ; i++) {
-                pointMaps[i].ChangeToSphere();
+            pointMaps[i].ChangeToSphere();
+            pointMaps[i].SetIsSphere(true);
         }
     }
 
     void ChangeToPlane () {
         for (int i = 0 ; i < pointMaps.Length ; i++) {
-                pointMaps [i].ChangeToPlane () ;
+            pointMaps [i].ChangeToPlane () ;
+            pointMaps[i].SetIsSphere(false);
         }
     }
 

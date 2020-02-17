@@ -29,13 +29,13 @@ public class InteractGraph : MonoBehaviour
             PointMap[] planets = map.GetPlanets();
             for (int i = 0; i < planets.Length; i++)
             {
-                planets[i].RemoveLaser();
+                planets[i].RemoveLaserAndPoints();
             }
 
             RaycastHit hit;
             Ray ray = Camera.main.ScreenPointToRay(mousePosition);
 
-            if (Physics.Raycast(ray, out hit, 1000f))
+            if (Physics.Raycast(ray, out hit, 2000f))
             {
                 if (hit.collider.tag == "graph")
                 {
@@ -43,6 +43,7 @@ public class InteractGraph : MonoBehaviour
                     Vector3 pointProche = new Vector3();
 
                     Dictionary<Vector3, List<Vector3>> graphToSphere = hit.collider.transform.parent.GetComponent<PointGraphs>().getPointsDict();
+                    Dictionary<Vector3, List<Vector3>> graphToPlane = hit.collider.transform.parent.GetComponent<PointGraphs>().getPointsDictPlane();
                     foreach (Vector3 point in graphToSphere.Keys)
                     {
                         float dist = Vector3.Distance(hit.collider.transform .position + point, hit.point);
@@ -56,6 +57,8 @@ public class InteractGraph : MonoBehaviour
                     for (int i = 0; i < planets.Length; i++)
                     {
                         planets[i].SetLaser(graphToSphere[pointProche], true);
+                        planets[i].SetLaserPlane(graphToPlane[pointProche], true);
+                        planets[i].RefreshLasers(planets[i].GetHiddenStatus());
                     }
                 }
             }
@@ -75,7 +78,7 @@ public class InteractGraph : MonoBehaviour
             RaycastHit hit;
             Ray ray = Camera.main.ScreenPointToRay(mousePosition);
 
-            if (Physics.Raycast(ray, out hit, 1000f))
+            if (Physics.Raycast(ray, out hit, 2000f))
             {
                 if (hit.collider.tag == "graph")
                 {
@@ -83,6 +86,7 @@ public class InteractGraph : MonoBehaviour
                     Vector3 pointProche = new Vector3();
 
                     Dictionary<Vector3, List<Vector3>> graphToSphere = hit.collider.transform.parent.GetComponent<PointGraphs>().getPointsDict();
+                    Dictionary<Vector3, List<Vector3>> graphToPlane = hit.collider.transform.parent.GetComponent<PointGraphs>().getPointsDictPlane();
                     foreach (Vector3 point in graphToSphere.Keys)
                     {
                         float dist = Vector3.Distance(hit.collider.transform.position + point, hit.point);
@@ -96,6 +100,8 @@ public class InteractGraph : MonoBehaviour
                     for (int i = 0; i < planets.Length; i++)
                     {
                         planets[i].SetLaser(graphToSphere[pointProche], true);
+                        planets[i].SetLaserPlane(graphToPlane[pointProche], true);
+                        planets[i].RefreshLasers(planets[i].GetHiddenStatus());
                     }
                 }
             }
@@ -106,7 +112,7 @@ public class InteractGraph : MonoBehaviour
 
             for (int i = 0; i < planets.Length; i++)
             {
-                planets[i].RemoveLaser();
+                planets[i].RemoveLaserAndPoints();
             }
         }
     }

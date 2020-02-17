@@ -22,11 +22,11 @@ public class InteractPlane : MonoBehaviour {
         var delta = mousePosition - previousMousePosition ;
         
         if (Input.GetKey(KeyCode.B)) {
-            transform.Rotate(new Vector3(delta.y, -delta.x, 0.0f) * Time.deltaTime * speed / 2);
+            transform.Rotate(new Vector3(delta.y, -delta.x, 0.0f) * Time.deltaTime * speed * 5);
         }
 
         if (Input.GetKey(KeyCode.N)) {
-            transform.Translate(new Vector3(0.0f, delta.y, 0.0f) * Time.deltaTime * speed);     
+            transform.Translate(new Vector3(0.0f, delta.y, 0.0f) * Time.deltaTime * speed * 5);     
         }
 
         if(Input.GetKey(KeyCode.I))

@@ -33,6 +33,7 @@ public class PointGraphs : MonoBehaviour
     public GameObject[][] pointGroups;
 
     protected Dictionary<Vector3, List<Vector3>> graphToSphere = new Dictionary<Vector3, List<Vector3>>();
+    protected Dictionary<Vector3, List<Vector3>> graphToPlane = new Dictionary<Vector3, List<Vector3>>();
 
 
     public void Start()
@@ -132,6 +133,11 @@ public class PointGraphs : MonoBehaviour
         return graphToSphere;
     }
 
+    internal Dictionary<Vector3, List<Vector3>> getPointsDictPlane()
+    {
+        return graphToPlane;
+    }
+
     public void SetShader(Shader shader)
     {
         this.shader = shader;
@@ -169,12 +175,13 @@ public class PointGraphs : MonoBehaviour
         rend.material.shader = shader;
         pointGroups[t][depth].transform.parent = transform;
         pointGroups[t][depth].SetActive(false);
-
+        
         pointGroups[t][depth].AddComponent<MeshCollider>();
         pointGroups[t][depth].GetComponent<MeshCollider>().sharedMesh = mesh;
+        /*
         pointGroups[t][depth].GetComponent<MeshCollider>().convex = true;
         pointGroups[t][depth].GetComponent<MeshCollider>().isTrigger = true;
-
+        */
         pointGroups[t][depth].tag = "graph";
     }
 
