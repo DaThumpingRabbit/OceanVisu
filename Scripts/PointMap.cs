@@ -133,10 +133,22 @@ public class PointMap : MonoBehaviour {
             laser.GetComponent<LineRenderer>().useWorldSpace = false;
             laser.GetComponent<LineRenderer>().endWidth = 20;
             laser.GetComponent<LineRenderer>().SetPosition(0, transform.position + point);
-            laser.GetComponent<LineRenderer>().SetPosition(1, transform.position + point * 3);
+            laser.GetComponent<LineRenderer>().SetPosition(1, transform.position + point * 2);
             laser.transform.RotateAround(transform.position, Vector3.forward, transform.eulerAngles.z);
             laser.transform.RotateAround(transform.position, Vector3.right, transform.eulerAngles.x);
             laser.transform.RotateAround(transform.position, Vector3.up, transform.eulerAngles.y);
+
+            GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            cube.transform.parent = laser.transform;
+            cube.transform.position = (laser.GetComponent<LineRenderer>().GetPosition(1) - laser.GetComponent<LineRenderer>().GetPosition(0)) * 2f;
+            cube.transform.localScale = new Vector3(30, 30, 30);
+            cube.GetComponent<MeshRenderer>().material.color = Color.red;
+            cube.AddComponent<BoxCollider>();
+            cube.GetComponent<BoxCollider>().isTrigger = true;
+            cube.AddComponent<InteractLaser>();
+
+            cube.tag = "laser";
+
             if (hidden)
             {
                 laser.SetActive(false);

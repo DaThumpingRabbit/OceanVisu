@@ -58,7 +58,7 @@ public class InteractGraph : MonoBehaviour
                     {
                         planets[i].SetLaser(graphToSphere[pointProche], true);
                         planets[i].SetLaserPlane(graphToPlane[pointProche], true);
-                        planets[i].RefreshLasers(planets[i].GetHiddenStatus());
+                        planets[i].RefreshLasers(!planets[i].GetHiddenStatus());
                     }
                 }
             }
@@ -101,7 +101,7 @@ public class InteractGraph : MonoBehaviour
                     {
                         planets[i].SetLaser(graphToSphere[pointProche], true);
                         planets[i].SetLaserPlane(graphToPlane[pointProche], true);
-                        planets[i].RefreshLasers(planets[i].GetHiddenStatus());
+                        planets[i].RefreshLasers(!planets[i].GetHiddenStatus());
                     }
                 }
             }

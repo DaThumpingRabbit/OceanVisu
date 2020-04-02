@@ -63,6 +63,7 @@ public class Interact : MonoBehaviour {
             */
         }
         if (leftIsDown) {
+
             for (int i=0; i < obj.Length; i++)
             {
                 obj[i].transform.Translate(new Vector3(delta.x*2, delta.y*2, 0.0f) * Time.deltaTime * speed,Space.World);
@@ -77,6 +78,7 @@ public class Interact : MonoBehaviour {
             Vector3 expectedNewPosition = cameraMatrix.MultiplyPoint3x4 (expectedLocalPosition) ;
             transform.position = expectedNewPosition ;
             */
+
         }
         if (middleIsDown) {
             if(!independent)
